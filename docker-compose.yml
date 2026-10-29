@@ -1,0 +1,70 @@
+services:
+  videohub:
+    build: .
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+      DATA_DIR: /app/data
+      PORT: 5000
+      TRUST_PROXY: "true"
+      REQUIRE_EMAIL_VERIFICATION: "true"
+      STRIPE_MODE: live
+      DATABASE_URL: ${DATABASE_URL:-postgresql://${POSTGRES_USER:-videohub}:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}@postgres:5432/${POSTGRES_DB:-videohub}}
+      REDIS_URL: ${REDIS_URL:-redis://:${REDIS_PASSWORD:?Set REDIS_PASSWORD in .env}@redis:6379}
+    expose:
+      - "5000"
+    volumes:
+      - videohub-data:/app/data
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - videohub
+
+  postgres:
+    image: postgres:17-bookworm
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-videohub}
+      POSTGRES_USER: ${POSTGRES_USER:-videohub}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\""]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - videohub
+
+  redis:
+    image: redis:7.4-bookworm
+    restart: unless-stopped
+    command: ["sh", "-c", "exec redis-server --appendonly yes --requirepass \"$${REDIS_PASSWORD}\""]
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:?Set REDIS_PASSWORD in .env}
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -a \"$${REDIS_PASSWORD}\" ping | grep -q PONG"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - videohub
+
+volumes:
+  videohub-data:
+  postgres-data:
+  redis-data:
+
+networks:
+  videohub:
+    name: videohub

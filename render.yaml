@@ -1,0 +1,58 @@
+services:
+  - type: web
+    name: videohub-staging
+    runtime: docker
+    plan: starter
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: TRUST_PROXY
+        value: "true"
+      - key: REQUIRE_EMAIL_VERIFICATION
+        value: "true"
+      - key: PUBLIC_APP_URL
+        sync: false
+      - key: DATABASE_URL
+        fromDatabase:
+          name: videohub-staging-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: keyvalue
+          name: videohub-staging-redis
+          property: connectionString
+      - key: MUX_TOKEN_ID
+        sync: false
+      - key: MUX_TOKEN_SECRET
+        sync: false
+      - key: MUX_WEBHOOK_SECRET
+        sync: false
+      - key: MUX_SIGNING_KEY
+        sync: false
+      - key: MUX_PRIVATE_KEY
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: EMAIL_FROM
+        sync: false
+      - key: STRIPE_MODE
+        value: test
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_PRICE_ID
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+
+  - type: keyvalue
+    name: videohub-staging-redis
+    plan: starter
+    ipAllowList: []
+
+databases:
+  - name: videohub-staging-db
+    databaseName: videohub_staging
+    user: videohub_staging
+    plan: basic-256mb
