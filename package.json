@@ -1,0 +1,62 @@
+{
+  "name": "voxbox",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "@emotion/react": "^11.10.0",
+    "@emotion/styled": "^11.10.0",
+    "@mui/icons-material": "^5.8.4",
+    "@mui/material": "^5.9.3",
+    "@mux/ts": "^15.6.1",
+    "better-sqlite3": "^12.2.0",
+    "concurrently": "^9.2.0",
+    "dotenv": "^16.6.1",
+    "express": "^5.1.0",
+    "helmet": "^8.1.0",
+    "hls.js": "^1.6.13",
+    "multer": "^2.0.2",
+    "pg": "^8.23.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-player": "^2.10.1",
+    "react-router-dom": "^6.3.0",
+    "react-scripts": "^5.0.1",
+    "redis": "^5.12.1",
+    "resend": "^6.34.1",
+    "stripe": "^18.5.0",
+    "tus-js-client": "^4.3.1"
+  },
+  "devDependencies": {
+    "supertest": "^7.1.4"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "dev": "concurrently -k \"node server.js\" \"react-scripts start\"",
+    "server": "node server.js",
+    "build": "react-scripts build",
+    "test": "node --test backend/*.test.js",
+    "eject": "react-scripts eject"
+  },
+  "proxy": "http://localhost:5000",
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "allowScripts": {
+    "better-sqlite3@12.11.1": true
+  }
+}
